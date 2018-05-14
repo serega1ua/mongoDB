@@ -1,0 +1,360 @@
+﻿
+Найти средний возраст в штате Аляска ,
+
+Найти людей из того же штата, что и предыдущий человек
+
+и посмотреть какой фрукт любят больше всего в этом штате
+
+-------------------------------------------------------
+
+
+
+db.users.aggregate([
+
+
+
+
+
+  {$match:
+
+    
+
+     {address:"Alaska"} },
+
+  {$group:
+
+     {_id: "total",
+
+         avg_alaska:{$avg:"$age"},
+
+     Fruit:{ $max: "$favoriteFruit"}}}
+
+]);
+
+------------------------------------
+
+средний возраст аляска
+
+---------------------------------------
+
+
+
+{
+
+    "_id" : "avg_alaska",
+
+    "avg_alaska" : 34.3333333333333
+
+}
+
+
+=============
+любимый фрукт на аляске
+
+{
+
+    "_id" : "banana",
+
+    "count_fruit" : 2.0
+
+}
+
+
+
+{
+
+    "_id" : "apple",
+
+    "count_fruit" : 4.0
+
+}
+============
+Добавить этому пользователю свойтво: { features: 'first apple eater' }
+
+
+
+db.users.update({name:"Elisabeth Cobb"},
+
+{$set: {features: 'first apple eater' }});
+
+
+
+Updated 1 existing record(s) in 90ms
+===========
+
+средний возраст
+
+{
+
+    "_id" : "avg_age",
+
+    "avg" : 30.3591905564924
+
+}
+============
+Найти средний возраст в штате Аляска ,
+
+Найти людей из того же штата, что и предыдущий человек
+
+и посмотреть какой фрукт любят больше всего в этом штате
+
+
+
+{
+
+    "_id" : "total",
+
+    "avg_alaska" : 34.3333333333333,
+
+    "Fruit" : "banana"
+
+}
+==========
+db.users.remove({favoriteFruit : "strawberry"});
+
+
+
+ответ:
+
+Removed 251 record(s)
+=========
+друг денис-
+
+{    "_id" : ObjectId("5adf3c1544abaca147cdd35e"),
+
+    "index" : 20,
+
+    "guid" : "de29e116-8837-4d0e-9dab-7dbc6c790f2f",
+
+    "isActive" : true,
+
+    "balance" : "$3,280.05",
+
+    "picture" : "http://placehold.it/32x32",
+
+    "age" : 26,
+
+    "eyeColor" : "green",
+
+    "name" : "Laura Herman",
+
+    "gender" : "female",
+
+    "company" : "GENMY",
+
+    "email" : "lauraherman@genmy.com",
+
+    "phone" : "+1 (861) 541-2523",
+
+    "address" : [ 
+
+        "182 Cumberland Street", 
+
+        "Ivanhoe", 
+
+        "Alaska", 
+
+        "457"
+
+    ],
+
+    "about" : "Duis esse laboris amet cupidatat magna aliqua irure ullamco reprehenderit eiusmod nulla. Commodo in consectetur eu aliqua esse culpa sint nisi. Sit commodo nulla dolore ipsum ea esse est. Sunt ex voluptate non ea aliqua irure nostrud pariatur Lorem.\r\n",
+
+    "registered" : "2017-05-29T06:06:12 -03:00",
+
+    "latitude" : 63.125933,
+
+    "longitude" : 171.835713,
+
+    "tags" : [ 
+
+        "fugiat", 
+
+        "dolor", 
+
+        "minim", 
+
+        "et", 
+
+        "elit", 
+
+        "voluptate", 
+
+        "veniam"
+
+    ],
+
+    "friends" : [ 
+
+        {
+
+            "id" : 0,
+
+            "name" : "Dennis"
+
+        }, 
+
+        {
+
+            "id" : 1,
+
+            "name" : "Shirley Solomon"
+
+        }, 
+
+        {
+
+            "id" : 2,
+
+            "name" : "Courtney Davis"
+
+        }
+
+    ],
+
+    "greeting" : "Hello, Laura Herman! You have 4 unread messages.",
+
+    "favoriteFruit" : "banana"
+
+}
+============
+самый ранний с любимым фруктом
+
+
+
+db.users.aggregate([
+
+
+
+  {$match:
+
+    {favoriteFruit:"apple"} },
+
+  {$group:
+
+     {_id: "name",
+
+         min:{$min:"$age"}}}
+
+])
+
+
+
+ответ
+
+{
+
+    "_id" : "name",
+
+    "min" : 20
+
+}
+
+
+=============
+
+
+
+
+
+
+
+
+
+Вот пояснения к запросам:
+
+средний возраст
+---------------------
+
+db.users.aggregate([
+{$group:{
+    _id:"$name" ,
+    
+    avg:{$max:"$age"},
+    sum:{$sum:"$age"}}}
+
+]);
+----------------------
+Найти средний возраст в штате Аляска ,
+Найти людей из того же штата, что и предыдущий человек
+и посмотреть какой фрукт любят больше всего в этом штате
+-------------------------------------------------------
+
+db.users.aggregate([
+
+
+  {$match:
+    
+     {address:"Alaska"} },
+  {$group:
+     {_id: "total",
+         avg_alaska:{$avg:"$age"},
+     Fruit:{ $max: "$favoriteFruit"}}}
+]);
+------------------------------------
+средний возраст аляска
+---------------------------------------
+
+db.users.aggregate([
+
+
+  {$match:
+    
+     {address:"Alaska"} },
+  {$group:
+     {_id: "avg_alaska",
+         avg_alaska:{$avg:"$age"}}}
+]);
+-------------------------------------------
+
+ Найти саммого раннего зарегистрировавшегося пользователя с
+ таким любимым фруктом
+ ------------------------------------------------------
+ db.users.aggregate([
+  {$match:
+     {address:"Alaska"} },
+     {$group:
+         {_id:"$favoriteFruit",
+             count_fruit:{"$sum":1}}}
+    
+]);
+---------------------------------------------------------
+Добавить этому пользовелю свойтво: { features: 'first apple eater' } 
+здесь name:"" подставить в кавычки свое которое у вас будее:
+
+найти имя по такому запросу:
+----------------------------
+ db.users.aggregate([
+
+  {$match:
+    {address:"Alaska"} },
+  {$group:
+     {_id: "$name",
+         min:{$min:"$age"}}}
+]);-выводит имена с аляски 
+-----------------------------------------------------------------------
+
+db.users.update({name:"Elisabeth Cobb"},
+{$set: {features: 'first apple eater' }});
+----------------------------------------------------------------------
+найти первого человека 
+с другом по имени Деннис 
+----------------------------------------------------
+db.users.find({"friends.name":"Durham Pollard"});
+
+
+ "friends.name":"" сюда в кавычка подставить нужное имя для поиска.
+ 
+ тут имя с фамилией нужно переделывать друзей разбивать фамилию и имя
+ например "Durham","Pollard" в JSON документе делать массив 
+ 
+  например этот друг Durham Pollard есть у "Macias Shannon"
+  -------------------------------------------------------------
+  Удалить всех любителей клубники (написать количество удаленных пользователей)
+  
+  -----------------------------------------------------------------------------
+db.users.remove({favoriteFruit : "strawberry"});
+------------------------
+напишет сколько удалено записей-
+Removed 251 record(s)
+--------------------------------------
